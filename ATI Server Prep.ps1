@@ -1,13 +1,36 @@
-﻿Configuration ATIServerPrep 
+Configuration ATIServerPrep 
 {
+  Param
+    ( [String]
+      $TimeZone = 'Pacific Standard Time',
 
-Import-DscResource -ModuleName 'PSDesiredStateConfiguration','NetworkingDSC' , 'xSystemSecurity', 'cDTC', 'ComputerManagementDsc'
+      [String]
+      $UserName = 'AtiService'
+    )
+
+
+Import-DscResource -ModuleName 'PSDesiredStateConfiguration','NetworkingDSC' , 'xSystemSecurity', 'cDTC', 'ComputerManagementDsc', 'xWindowsUpdate'
 
 #TimeZone
     TimeZone SetTimeZone
      {
        IsSingleInstance = 'Yes'
-       TimeZone = 'Pacific Standard Time'
+       TimeZone = $TimeZone
+     }
+
+#Check local admin user
+    User LocalAdmin
+     {
+       UserName = $UserName
+       Ensure = "Present"
+       Disabled = $False
+     }
+
+    Group Administrators 
+     {
+       GroupName="Administrators"
+       DependsOn="[User]LocalAdmin"
+       MembersToInclude="LocalAmdin"
      }
 
 #install required windows features
@@ -79,6 +102,7 @@ Import-DscResource -ModuleName 'PSDesiredStateConfiguration','NetworkingDSC' , '
 
          GetScript = {Get-NetAdapterPowerManagement}
        }
+
+#Bad Hotfixes
       
 }
-
