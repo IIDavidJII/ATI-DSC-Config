@@ -3,10 +3,7 @@ Configuration ATIServerPrep
   Param
     ( [String]
       $TimeZone = 'Pacific Standard Time',
-
-      [String]
-      $Password = 'Password1',
-
+      
       [String]
       $username = 'ATIService'
 
