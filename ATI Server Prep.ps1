@@ -5,11 +5,16 @@ Configuration ATIServerPrep
       $TimeZone = 'Pacific Standard Time',
 
       [String]
-      $UserName = 'AtiService'
+      $Password = 'Password1',
+
+      [String]
+      $username = 'ATIService'
+
     )
 
+Import-DscResource -ModuleName 'PSDesiredStateConfiguration','NetworkingDSC' , 'xSystemSecurity', 'cDTC', 'ComputerManagementDsc'
 
-Import-DscResource -ModuleName 'PSDesiredStateConfiguration','NetworkingDSC' , 'xSystemSecurity', 'cDTC', 'ComputerManagementDsc', 'xWindowsUpdate'
+
 
 #TimeZone
     TimeZone SetTimeZone
@@ -18,19 +23,12 @@ Import-DscResource -ModuleName 'PSDesiredStateConfiguration','NetworkingDSC' , '
        TimeZone = $TimeZone
      }
 
-#Check local admin user
-    User LocalAdmin
-     {
-       UserName = $UserName
-       Ensure = "Present"
-       Disabled = $False
-     }
 
+#add EXISTING account to local admin   
     Group Administrators 
      {
        GroupName="Administrators"
-       DependsOn="[User]LocalAdmin"
-       MembersToInclude="LocalAmdin"
+       MembersToInclude=$username
      }
 
 #install required windows features
@@ -106,3 +104,15 @@ Import-DscResource -ModuleName 'PSDesiredStateConfiguration','NetworkingDSC' , '
 #Bad Hotfixes
       
 }
+
+$cd = @{
+    AllNodes = @(
+        @{
+            NodeName = 'localhost'
+            PSDscAllowPlainTextPassword = $true
+        }
+    )
+}
+ATIServerPrep -ConfigurationData $cd -OutputPath C:\DSC
+
+Start-DscConfiguration -Path C:\DSC -Wait -Force -Verbose
