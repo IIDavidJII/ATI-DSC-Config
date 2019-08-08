@@ -7,7 +7,7 @@ ATI Server Prep Desired Configuration
  * cDTC
  * ComputerManagementDs
     
-This project was written for Windows Server 2016 and powershell 5.1, but can be made compatable with Windows Server 2012 R2. The desired state configuration will set required windows features in server preperation. Have a reques then add to the issues list to request a feature. The server will have to be connected to the internet to get required modules. If pushing to a multi node envrionment then all target nodes have to have the modules installed and be trusted across the network. 
+This project was written for Windows Server 2016 and powershell 5.1, but can be made compatable with Windows Server 2012 R2. The desired state configuration will set required windows features in server preperation. The server will have to be connected to the internet to get required modules. If pushing to a multi node envrionment then all target nodes have to have the modules installed and be trusted across the network. 
 
 ### Recommended: update all DSCrecources in powershell via command 
 ```  
@@ -30,3 +30,10 @@ Invoke-Command -Session $session -ScriptBlock {
 }
 Remove-PSSession $session
 ```
+## Desired State Configuraiton for Server Preperation
+Desired state configuration describes the windows envrionment to be rather than declaring how it should be set up. Levering this mehtodology allows for dynamic configruation accross multiple versions of windows. Rather than relying on declarative syntax the envrionment is described how it should be. The process invovles creating a MOF file then pushing configuration down to the individual nodes. How to use:
+  1. Downloand powershell script to administrative computer or a local node
+  1. Change params section for 
+     1. $timezone
+     1. $localUser
+     1. $password
