@@ -1,17 +1,22 @@
+
 Configuration ATIServerPrep 
 {
   Param
     ( [String]
       $TimeZone = 'Pacific Standard Time',
-      
-      [String]
-      $username = 'ATIService'
 
+      [String]
+      $LocalUser = 'AtiService1',
+
+      $Password = ("{PUG=pXk>x99uUN" | ConvertTo-SecureString -asPlainText -Force),
+
+      [PSCredential]
+      $Credential = (New-Object System.Management.Automation.PSCredential($LocalUser,$password))
     )
 
 Import-DscResource -ModuleName 'PSDesiredStateConfiguration','NetworkingDSC' , 'xSystemSecurity', 'cDTC', 'ComputerManagementDsc'
 
-
+Node "LocalHost" {
 
 #TimeZone
     TimeZone SetTimeZone
@@ -20,12 +25,21 @@ Import-DscResource -ModuleName 'PSDesiredStateConfiguration','NetworkingDSC' , '
        TimeZone = $TimeZone
      }
 
+#add Local service account
+    User LocalUser
+    {
+      Ensure = "Present"
+      UserName = $LocalUser
+      Password = $Credential
+    }
+
 
 #add EXISTING account to local admin   
     Group Administrators 
      {
        GroupName="Administrators"
-       MembersToInclude=$username
+       MembersToInclude=$LocalUser
+       DependsOn = "[User]LocalUser"
      }
 
 #install required windows features
@@ -97,17 +111,96 @@ Import-DscResource -ModuleName 'PSDesiredStateConfiguration','NetworkingDSC' , '
 
          GetScript = {Get-NetAdapterPowerManagement}
        }
+ }
+ 
+ Node $AllNodes.Where{$_.Role -eq "nConnect"}.nodename
+ {
+   WindowsFeature IISInstall1 {
+     Name =  'Web-Server'
+     Ensure = 'Present'
+   }
 
-#Bad Hotfixes
+   WindowsFeature IISInstall2 {
+     Name = 'Web-WebServer'
+     Ensure = 'Present'
+   }
+
+   WindowsFeature IISInstall3 {
+     Name = 'Web-Common-Http'
+     Ensure = 'Present'
+   }
+
+   WindowsFeature IISInstall4 {
+     Name = 'Web-Default-Doc'
+     Ensure = 'Present'
+   }
+
+   WindowsFeature IISInstall5 {
+     Name = 'Web-Dir-Browsing'
+     Ensure = 'Present'
+   }
       
+  }
+
 }
+#Only allowed one node name change as needed
 
 $cd = @{
     AllNodes = @(
         @{
-            NodeName = 'localhost'
-            PSDscAllowPlainTextPassword = $true
-        }
+            NodeName = "*"
+            PsDscAllowPlainTextPassword = $true
+         }
+
+        @{
+            NodeName = "localhost"
+            Role = "nConnect"
+         }
+#        @{
+#            NodeName = "localhost"
+#            Role = "MMT"
+#         }
+#
+#        @{
+#            NodeName = "localhost"
+#            Role = "PMT"
+#         }
+#
+#        @{
+#            NodeName = "localhost"
+#            Role = "SMMT"
+#         }
+#
+#        @{
+#            NodeName = "localhost"
+#            Role = "SMCache"
+#         }
+#
+#        @{
+#            NodeName = "localhost"
+#            Role = "PollerClients"
+#         }
+#
+#
+#        @{
+#            NodeName = "localhost"
+#            Role = "Security"
+#         }
+#
+#        @{
+#            NodeName = "localhost"
+#            Role = "Configuration"
+#         }
+#
+#        @{
+#            NodeName = "localhost"
+#            Role = "Patron"
+#         }
+#
+#        @{
+#            NodeName = "localhost"
+#            Role = "PatronBalance"
+#         }
     )
 }
 ATIServerPrep -ConfigurationData $cd -OutputPath C:\DSC
