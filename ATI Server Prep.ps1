@@ -16,7 +16,7 @@ Configuration ATIServerPrep
 
 Import-DscResource -ModuleName 'PSDesiredStateConfiguration','NetworkingDSC' , 'xSystemSecurity', 'cDTC', 'ComputerManagementDsc'
 
-Node "LocalHost" {
+Node $AllNodes.NodeName {
 
 #Disable Firewall
   Script DisableFirewalls
@@ -153,6 +153,21 @@ Node "LocalHost" {
    WindowsFeature IISInstall5 {
      Name = 'Web-Dir-Browsing'
      Ensure = 'Present'
+   }
+
+#Registry edit for HTTP2
+   Registry HTTP2Disable1  {
+     Ensure = "Present"
+     Key = "HKEY_LOCAL_MACHINE\System\CurrentControlSet\Services\HTTP\Parameters"
+     ValueName = "EnableHttp2Tls"
+     ValueData = "0"
+   }
+
+   Registry HTTP2Disable2 {
+     Ensure = "Present"
+     Key = "HKEY_LOCAL_MACHINE\System\CurrentControlSet\Services\HTTP\Parameters"
+     ValueName = "EnableHttp2Cleartext"
+     ValueData = "0"
    }
       
   }
