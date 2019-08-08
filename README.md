@@ -37,6 +37,6 @@ Desired state configuration describes the windows envrionment to be rather than 
      1. $timezone
      1. $localUser
      1. $password
-  1. Expand to multiple machines
-     1.Change $CD nodeName to Host Names of target machines
-     1.Change Node localhost to $AllNodes.NodeName
+  1. Expand to multiple machine
+     1. Change $CD nodeName to Host Names of target machines
+     1. Change Node localhost to $AllNodes.NodeName
