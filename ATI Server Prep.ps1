@@ -18,6 +18,20 @@ Import-DscResource -ModuleName 'PSDesiredStateConfiguration','NetworkingDSC' , '
 
 Node "LocalHost" {
 
+#Disable Firewall
+  Script DisableFirewalls
+     {
+       GetScript = {(Get-NetFirewallProfile -All -ErrorAction SilentlyContinue).Enabled}
+
+       TestScript = {
+                       IF((Get-NetFirewallProfile -all -ErrorAction SilentlyContinue).Enabled) 
+                            {return $true} 
+                       ELSE {return $false} 
+                    }
+       SetScript = {Set-NetFIrewallProfile -all -Enabled False}
+     }
+
+
 #TimeZone
     TimeZone SetTimeZone
      {
@@ -102,7 +116,8 @@ Node "LocalHost" {
                         If (
                              $adapterPower.ArpOffload -eq "Unsupported"  -and $adapterPower.NSOffload -eq "Unsupported" -and $adapterPower.RsnRekeyOffload -eq "Unsupported" -and $adapterPower.D0PacketCoalescing-eq "Unsupported" -and $adapterPower.SelectiveSuspend -eq "Unsupported" -and $adapterPower.DeviceSleepOnDisconnect -eq "Unsupported" -and $adapterPower.WakeOnMagicPacket -eq "Unsupported" -and $adapterPower.WakeOnPattern -eq "Unsupported"
                            ){return $true}
-                             Else {return $false}
+                             
+                       Else {return $false}
                       }
 
          SetScript = {$adapters = Get-NetAdapter
