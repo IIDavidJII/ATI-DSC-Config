@@ -32,11 +32,12 @@ Remove-PSSession $session
 ```
 ## Desired State Configuraiton for Server Preperation
 Desired state configuration describes the windows envrionment to be rather than declaring how it should be set up. Levering this mehtodology allows for dynamic configruation accross multiple versions of windows. Rather than relying on declarative syntax the envrionment is described how it should be. The process invovles creating a MOF file then pushing configuration down to the individual nodes. How to use:
-  1. Downloand powershell script to administrative computer or a local node
-  1. Change params section for 
-     1. $timezone
-     1. $localUser
-     1. $password
-  1. Expand to multiple machine
-     1. Change $CD nodeName to Host Names of target machines
-     1. Change Node localhost to $AllNodes.NodeName
+  1. Downloand powershell script to administrative computer or a local node and prepare script
+     1. Change params section for 
+        1. $timezone
+        1. $localUser
+        1. $password
+     1. Expand to multiple machine
+        1. Change $CD nodeName to Host Names of target machines
+        1. Change Node localhost to $AllNodes.NodeName
+  1. Run scrtipt Ensure -outputpath on second to last line exists and change c:\DSC as necessary
