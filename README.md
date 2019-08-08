@@ -41,3 +41,6 @@ Desired state configuration describes the windows envrionment to be rather than 
         1. Change $CD nodeName to Host Names of target machines
         1. Change Node localhost to $AllNodes.NodeName
   1. Run scrtipt Ensure -outputpath on second to last line exists and change c:\DSC as necessary
+  
+ ## Troubleshooting
+ Scripts 
