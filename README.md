@@ -43,4 +43,5 @@ Desired state configuration describes the windows envrionment to be rather than 
   1. Run scrtipt Ensure -outputpath on second to last line exists and change c:\DSC as necessary
   
  ## Troubleshooting
- Scripts 
+ 
+The verbose output will write errors to screen. Also check windows event viewer for errors.
